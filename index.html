@@ -52,11 +52,21 @@
     margin: 0 0 8px;
     font-weight: 500;
   }
+  header.hero .author-entry {
+    display: inline-block;
+    white-space: nowrap;
+    margin: 0 0 6px;
+  }
   header.hero .authors a {
     color: var(--text);
     text-decoration: none;
     border-bottom: 1px dotted transparent;
     transition: color 0.15s ease, border-color 0.15s ease;
+  }
+  header.hero .authors a.author-email {
+    color: var(--text-dim);
+    font-size: 13px;
+    font-weight: 400;
   }
   header.hero .authors a:hover {
     color: var(--accent);
@@ -338,11 +348,11 @@
   <header class="hero">
     <h1>Learning High-Frequency Continuous Action Chunks in Latent Space</h1>
     <p class="authors">
-      <a href="mailto:wkykaixin@sjtu.edu.cn">Kunyun Wang</a><sup>1,2,*</sup>&emsp;
-      <a href="mailto:zhengyh021@gmail.com">Yuhang Zheng</a><sup>2,3</sup>&emsp;
-      <a href="mailto:zhengyupeng2022@ia.ac.cn">Yupeng Zheng</a><sup>2,4</sup>&emsp;
-      <a href="mailto:zhao-jieru@sjtu.edu.cn">Jieru Zhao</a><sup>1,&dagger;</sup>&emsp;
-      <a href="mailto:dingwenchao@fudan.edu.cn">Wenchao Ding</a><sup>2,5,&dagger;</sup>
+      <span class="author-entry"><a href="mailto:wkykaixin@sjtu.edu.cn">Kunyun Wang</a> <a class="author-email" href="mailto:wkykaixin@sjtu.edu.cn">(wkykaixin@sjtu.edu.cn)</a><sup>1,2,*</sup></span>&emsp;
+      <span class="author-entry"><a href="mailto:zhengyh021@gmail.com">Yuhang Zheng</a> <a class="author-email" href="mailto:zhengyh021@gmail.com">(zhengyh021@gmail.com)</a><sup>2,3</sup></span>&emsp;
+      <span class="author-entry"><a href="mailto:zhengyupeng2022@ia.ac.cn">Yupeng Zheng</a> <a class="author-email" href="mailto:zhengyupeng2022@ia.ac.cn">(zhengyupeng2022@ia.ac.cn)</a><sup>2,4</sup></span>&emsp;
+      <span class="author-entry"><a href="mailto:zhao-jieru@sjtu.edu.cn">Jieru Zhao</a> <a class="author-email" href="mailto:zhao-jieru@sjtu.edu.cn">(zhao-jieru@sjtu.edu.cn)</a><sup>1,&dagger;</sup></span>&emsp;
+      <span class="author-entry"><a href="mailto:dingwenchao@fudan.edu.cn">Wenchao Ding</a> <a class="author-email" href="mailto:dingwenchao@fudan.edu.cn">(dingwenchao@fudan.edu.cn)</a><sup>2,5,&dagger;</sup></span>
     </p>
     <p class="affiliations">
       <sup>1</sup>School of Computer Science, Shanghai Jiao Tong University&emsp;
