@@ -52,6 +52,16 @@
     margin: 0 0 8px;
     font-weight: 500;
   }
+  header.hero .authors a {
+    color: var(--text);
+    text-decoration: none;
+    border-bottom: 1px dotted transparent;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+  header.hero .authors a:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
   header.hero .authors sup {
     font-size: 11px;
     color: var(--text-dim);
@@ -328,11 +338,11 @@
   <header class="hero">
     <h1>Learning High-Frequency Continuous Action Chunks in Latent Space</h1>
     <p class="authors">
-      Kunyun Wang<sup>1,2</sup>&emsp;
-      Yuhang Zheng<sup>2,3</sup>&emsp;
-      Yupeng Zheng<sup>2,4</sup>&emsp;
-      Jieru Zhao<sup>1,+</sup>&emsp;
-      Wenchao Ding<sup>2,5,+</sup>
+      <a href="mailto:wkykaixin@sjtu.edu.cn">Kunyun Wang</a><sup>1,2,*</sup>&emsp;
+      <a href="mailto:zhengyh021@gmail.com">Yuhang Zheng</a><sup>2,3</sup>&emsp;
+      <a href="mailto:zhengyupeng2022@ia.ac.cn">Yupeng Zheng</a><sup>2,4</sup>&emsp;
+      <a href="mailto:zhao-jieru@sjtu.edu.cn">Jieru Zhao</a><sup>1,&dagger;</sup>&emsp;
+      <a href="mailto:dingwenchao@fudan.edu.cn">Wenchao Ding</a><sup>2,5,&dagger;</sup>
     </p>
     <p class="affiliations">
       <sup>1</sup>School of Computer Science, Shanghai Jiao Tong University&emsp;
@@ -341,7 +351,7 @@
       <sup>4</sup>Institute of Automation, Chinese Academy of Sciences&emsp;
       <sup>5</sup>Fudan University
     </p>
-    <p class="corresponding"><sup>+</sup>Corresponding authors: <a href="mailto:zhao-jieru@sjtu.edu.cn">zhao-jieru@sjtu.edu.cn</a>, <a href="mailto:dingwenchao@fudan.edu.cn">dingwenchao@fudan.edu.cn</a></p>
+    <p class="corresponding"><sup>*</sup>Work done during an internship at TARS Robotics.&emsp;<sup>&dagger;</sup>Corresponding authors.</p>
     <span class="venue">ICML 2026</span>
     <div class="links">
       <a href="https://github.com/tars-robotics/RTR" target="_blank" rel="noopener">
