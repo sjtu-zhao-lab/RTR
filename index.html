@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RTR — Learning High-Frequency Continuous Action Chunks in Latent Space</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-soft: #f7f8fa;
+    --bg-card: #ffffff;
+    --text: #1a1d22;
+    --text-dim: #5a6270;
+    --accent: #2563eb;
+    --accent-soft: #dbeafe;
+    --border: #e5e7eb;
+    --highlight: #f0fdf4;
+    --highlight-border: #86efac;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+  }
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+  }
+  header.hero {
+    text-align: center;
+    padding: 32px 16px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+  header.hero h1 {
+    font-size: 28px;
+    margin: 0 0 8px;
+    line-height: 1.3;
+  }
+  header.hero .subtitle {
+    font-size: 16px;
+    color: var(--text-dim);
+    margin: 0 0 12px;
+  }
+  header.hero .venue {
+    display: inline-block;
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  header.hero .links {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 16px 0 0;
+    flex-wrap: wrap;
+  }
+  header.hero .links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--text);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+  header.hero .links a:hover {
+    background: var(--accent);
+    transform: translateY(-1px);
+  }
+  header.hero .links a svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+  }
+  .lay-summary {
+    max-width: 1000px;
+    margin: 24px auto 0;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 18px 22px;
+    text-align: left;
+  }
+  .lay-summary h3 {
+    margin: 0 0 8px;
+    font-size: 15px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+  .lay-summary p {
+    margin: 0 0 10px;
+    font-size: 14.5px;
+    color: var(--text);
+    line-height: 1.7;
+  }
+  .lay-summary p:last-child { margin-bottom: 0; }
+  .part {
+    margin: 56px 0 0;
+    padding-top: 32px;
+    border-top: 3px solid var(--accent);
+  }
+  .part-header {
+    margin-bottom: 24px;
+  }
+  .part-label {
+    display: inline-block;
+    background: var(--accent);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .part h2 {
+    font-size: 24px;
+    margin: 12px 0 8px;
+  }
+  .part .part-desc {
+    color: var(--text-dim);
+    margin: 0;
+    font-size: 15px;
+  }
+  .intro-block {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin: 24px 0 40px;
+  }
+  .intro-block h3 {
+    margin: 0 0 8px;
+    font-size: 17px;
+    color: var(--accent);
+  }
+  .intro-block .slide-figure {
+    margin: 16px 0 0;
+  }
+  .intro-block .slide-figure img {
+    width: 100%;
+    max-width: 1000px;
+    display: block;
+    margin: 0 auto;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .intro-block .slide-caption {
+    font-size: 14px;
+    color: var(--text-dim);
+    text-align: center;
+    margin: 10px 0 0;
+    font-style: italic;
+  }
+  .task-section {
+    margin: 48px 0 0;
+  }
+  .task-section > h3 {
+    font-size: 20px;
+    margin: 0 0 4px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--border);
+  }
+  .task-section > .task-desc {
+    color: var(--text-dim);
+    margin: 0 0 24px;
+    font-size: 14px;
+  }
+  .video-group {
+    margin: 28px 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .video-group h4 {
+    margin: 0 0 6px;
+    font-size: 16px;
+  }
+  .video-group .group-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin: 0 0 16px;
+  }
+  .video-group .group-takeaway {
+    margin: 14px 0 0;
+    padding: 10px 14px;
+    background: var(--highlight);
+    border-left: 3px solid var(--highlight-border);
+    border-radius: 4px;
+    font-size: 13px;
+    color: #166534;
+  }
+  .video-grid {
+    display: grid;
+    gap: 14px;
+  }
+  .video-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .video-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .video-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+  .video-grid.cols-5 { grid-template-columns: repeat(5, 1fr); }
+  @media (max-width: 1100px) {
+    .video-grid.cols-4, .video-grid.cols-5 { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 700px) {
+    .video-grid.cols-2, .video-grid.cols-3,
+    .video-grid.cols-4, .video-grid.cols-5 { grid-template-columns: 1fr; }
+  }
+  .video-card {
+    background: var(--bg-soft);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .video-card.ours {
+    background: #ecfdf5;
+    border: 1.5px solid #86efac;
+  }
+  .video-card video {
+    width: 100%;
+    display: block;
+    background: #000;
+    aspect-ratio: 16 / 9;
+    object-fit: contain;
+  }
+  .video-meta {
+    padding: 10px 12px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .video-title {
+    font-weight: 600;
+    font-size: 14px;
+    margin: 0 0 4px;
+    line-height: 1.35;
+  }
+  .video-title .badge {
+    display: inline-block;
+    background: #16a34a;
+    color: white;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-left: 4px;
+    vertical-align: middle;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+  .video-caption {
+    font-size: 12.5px;
+    color: var(--text-dim);
+    margin: 0;
+    line-height: 1.5;
+  }
+  footer {
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 13px;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+  .controls-note {
+    background: var(--accent-soft);
+    color: #1e40af;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin: 0 0 24px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header class="hero">
+    <h1>Learning High-Frequency Continuous Action Chunks in Latent Space</h1>
+    <p class="subtitle">Kunyun Wang, Yuhang Zheng, Yupeng Zheng, Jieru Zhao, Wenchao Ding</p>
+    <span class="venue">ICML 2026</span>
+    <div class="links">
+      <a href="https://github.com/tars-robotics/RTR" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        Code
+      </a>
+      <a href="https://arxiv.org/pdf/arXiv:2605.24931" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5L9.5 0zM9 1.5L12.5 5H10a1 1 0 0 1-1-1V1.5zM4.5 7.5h7v1h-7v-1zm0 2.5h7v1h-7v-1zm0 2.5h4v1h-4v-1z"/></svg>
+        arXiv
+      </a>
+    </div>
+
+    <div class="lay-summary">
+      <h3>Lay Summary</h3>
+      <p>Imitation learning policies control robots by predicting short sequences of future actions, known as action chunks, and then executing these actions on the robot. Increasing the action frequency can make robot motion smoother by reducing the stop-and-go behavior often seen in low-frequency execution, allowing the robot to move with more stable velocities. However, high-frequency actions are also harder for policies to learn, because they contain denser temporal information and finer spatial variations.</p>
+      <p>In this work, we propose learning high-frequency action chunks in a latent space, which provides a more compact and structured representation of motion. This helps the policy generate smoother and more consistent action sequences. To further reduce execution stalls caused by model inference latency, we use asynchronous inference, where the robot continues executing current actions while the policy predicts the next action chunk. However, asynchronous inference can introduce discontinuities when switching between chunks. To address this, we propose Reuse-then-Refine, a method that reduces boundary gaps between consecutive chunks and improves execution smoothness.</p>
+      <p>In real-robot experiments, our method reduces jerky motions and execution stalls across several contact-rich manipulation tasks. Overall, this work helps make learned robot policies more reliable for continuous physical interaction.</p>
+    </div>
+  </header>
+
+  <p class="controls-note">All videos are muted. Click any video to play; right-click for native browser controls. Videos play independently — pause one without affecting the others.</p>
+
+  <!-- ============================================================ -->
+  <!-- PART 1: SYNCHRONOUS INFERENCE                                -->
+  <!-- ============================================================ -->
+  <section class="part">
+    <div class="part-header">
+      <span class="part-label">Part 1 · Synchronous Inference</span>
+      <h2>Latent space enables smooth high-frequency control</h2>
+      <p class="part-desc">High-frequency actions are required for continuous robot motion with stable velocities, but learning them directly in action space is unstable. We show that learning in a continuous latent space recovers smooth, stable execution.</p>
+    </div>
+
+    <!-- ============================== Slide intro block ============================== -->
+    <div class="intro-block">
+      <h3>Motivation &amp; Method</h3>
+      <p>Before diving into the comparisons, three key ideas:</p>
+
+      <figure class="slide-figure">
+        <img src="assets/slides/slide_04_motivation_frequency.png" alt="Motivation I: action frequency shapes execution">
+        <figcaption class="slide-caption">Motivation I — Low-frequency actions create distant targets and stop-and-go motion; high-frequency actions enable continuous, servo-like control.</figcaption>
+      </figure>
+
+      <figure class="slide-figure">
+        <img src="assets/slides/slide_05_motivation_hard_to_learn.png" alt="Motivation II: high-frequency actions are harder to learn">
+        <figcaption class="slide-caption">Motivation II — Learning high-frequency actions directly in action space amplifies quantization errors and jitter; naive upsampling from low-frequency predictions is smoother but imprecise.</figcaption>
+      </figure>
+
+      <figure class="slide-figure">
+        <img src="assets/slides/slide_06_method_latent_space.png" alt="Method I: learning high-frequency actions in latent space">
+        <figcaption class="slide-caption">Method I — A VAE compresses high-frequency action chunks into a temporally downsampled continuous latent space. The policy predicts latents; the decoder reconstructs precise, smooth high-frequency action chunks.</figcaption>
+      </figure>
+    </div>
+
+    <!-- ============================== Wipe Vase (sync) ============================== -->
+    <div class="task-section">
+      <h3>1.1 Wipe Vase (synchronous)</h3>
+      <p class="task-desc">Continuous-contact wiping motion — smoothness directly visible in trajectory and contact quality.</p>
+
+      <div class="video-group">
+        <h4>DP — 4-way comparison: frequency &amp; representation</h4>
+        <p class="group-desc">Same task, same policy (Diffusion Policy), four action representations.</p>
+        <div class="video-grid cols-4">
+          <div class="video-card">
+            <video src="assets/videos/sync_wipe_vase_dp_15hz.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">DP 15 Hz</p><p class="video-caption">low frequency, stop-and-go</p></div>
+          </div>
+          <div class="video-card">
+            <video src="assets/videos/sync_wipe_vase_dp_interpolated_60hz.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">DP interpolated 60 Hz</p><p class="video-caption">upsampled from 15 Hz, jittery</p></div>
+          </div>
+          <div class="video-card">
+            <video src="assets/videos/sync_wipe_vase_dp_original_60hz.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">DP original 60 Hz</p><p class="video-caption">direct high-freq learning, jittery</p></div>
+          </div>
+          <div class="video-card ours">
+            <video src="assets/videos/sync_wipe_vase_dp_latent_60hz.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">DP latent 60 Hz <span class="badge">OURS</span></p><p class="video-caption">high-freq in latent space, smooth &amp; stable</p></div>
+          </div>
+        </div>
+        <p class="group-takeaway">Takeaway: 15 Hz → too slow; interpolation → still jittery; direct 60 Hz → still jittery; latent 60 Hz → truly smooth.</p>
+      </div>
+
+      <div class="video-group">
+        <h4>OFT — Latent vs Original</h4>
+        <div class="video-grid cols-2">
+          <div class="video-card">
+            <video src="assets/videos/sync_wipe_vase_oft_original.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">OFT original</p><p class="video-caption">high jerk, less smooth</p></div>
+          </div>
+          <div class="video-card ours">
+            <video src="assets/videos/sync_wipe_vase_oft_latent.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">OFT latent <span class="badge">OURS</span></p><p class="video-caption">smoother motion</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="video-group">
+        <h4>PI0.5 — Latent vs Original</h4>
+        <div class="video-grid cols-2">
+          <div class="video-card">
+            <video src="assets/videos/sync_wipe_vase_pi05_original.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">PI0.5 original</p><p class="video-caption">high jerk</p></div>
+          </div>
+          <div class="video-card ours">
+            <video src="assets/videos/sync_wipe_vase_pi05_latent.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">PI0.5 latent <span class="badge">OURS</span></p><p class="video-caption">smoother motion</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================== Write Board (sync) ============================== -->
+    <div class="task-section">
+      <h3>1.2 Write Board (synchronous)</h3>
+      <p class="task-desc">Fine-motor writing task — trajectory precision and continuity are visually obvious in the handwriting output.</p>
+
+      <div class="video-group">
+        <h4>OFT — Latent vs Original</h4>
+        <div class="video-grid cols-2">
+          <div class="video-card">
+            <video src="assets/videos/sync_write_board_oft_original.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">OFT original</p><p class="video-caption">large jerk, stalls</p></div>
+          </div>
+          <div class="video-card ours">
+            <video src="assets/videos/sync_write_board_oft_latent.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">OFT latent <span class="badge">OURS</span></p><p class="video-caption">smoother writing motion</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="video-group">
+        <h4>PI0.5 — Latent vs Original</h4>
+        <div class="video-grid cols-2">
+          <div class="video-card">
+            <video src="assets/videos/sync_write_board_pi05_original.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">PI0.5 original</p><p class="video-caption">less smooth</p></div>
+          </div>
+          <div class="video-card ours">
+            <video src="assets/videos/sync_write_board_pi05_latent.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">PI0.5 latent <span class="badge">OURS</span></p><p class="video-caption">smoother writing motion</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================== Peel Cucumber (sync) ============================== -->
+    <div class="task-section">
+      <h3>1.3 Peel Cucumber (synchronous)</h3>
+      <p class="task-desc">Contact-rich, force-sensitive task — stop-and-go produces visible force disturbances.</p>
+
+      <div class="video-group">
+        <h4>DP — 3-way high-frequency comparison</h4>
+        <div class="video-grid cols-3">
+          <div class="video-card">
+            <video src="assets/videos/sync_peel_cucumber_dp_interpolated_60hz.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">DP interpolated 60 Hz</p><p class="video-caption">upsampled, jittery</p></div>
+          </div>
+          <div class="video-card">
+            <video src="assets/videos/sync_peel_cucumber_dp_original_60hz.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">DP original 60 Hz</p><p class="video-caption">direct high-freq, jittery</p></div>
+          </div>
+          <div class="video-card ours">
+            <video src="assets/videos/sync_peel_cucumber_dp_latent.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">DP latent <span class="badge">OURS</span></p><p class="video-caption">smooth &amp; stable</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="video-group">
+        <h4>PI0.5 — Latent vs Original</h4>
+        <div class="video-grid cols-2">
+          <div class="video-card">
+            <video src="assets/videos/sync_peel_cucumber_pi05_original.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">PI0.5 original</p><p class="video-caption">high jerk</p></div>
+          </div>
+          <div class="video-card ours">
+            <video src="assets/videos/sync_peel_cucumber_pi05_latent.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">PI0.5 latent <span class="badge">OURS</span></p><p class="video-caption">smoother peeling motion</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- PART 2: ASYNCHRONOUS INFERENCE                               -->
+  <!-- ============================================================ -->
+  <section class="part">
+    <div class="part-header">
+      <span class="part-label">Part 2 · Asynchronous Inference</span>
+      <h2>Reuse-then-Refine removes chunk-boundary gaps</h2>
+      <p class="part-desc">Latent space solves intra-chunk smoothness. Under asynchronous inference (which hides inference latency), a new problem appears: chunk-boundary discontinuities. RTR solves this with a training-free reuse-and-refine strategy. Combined latent-representation and RTR, our work achieves real-time smooth control.</p>
+    </div>
+
+    <!-- ============================== Slide intro block ============================== -->
+    <div class="intro-block">
+      <h3>Method — Reuse-then-Refine (RTR)</h3>
+      <figure class="slide-figure">
+        <img src="assets/slides/slide_07_method_rtr.png" alt="Method II: Reuse-then-Refine for chunk-level continuity">
+        <figcaption class="slide-caption">Method II — RTR reuses recently executed actions, concatenates them with the still-valid portion of the new chunk, and refines the result through the VAE (~2 ms). Latent space ensures chunk-internal smoothness; RTR ensures chunk-to-chunk continuity.</figcaption>
+      </figure>
+    </div>
+
+    <!-- ============================== Wipe Vase (async) ============================== -->
+    <div class="task-section">
+      <h3>2.1 Wipe Vase (asynchronous)</h3>
+
+      <div class="video-group">
+        <h4>DP — Original vs Latent vs Latent+RTR</h4>
+        <div class="video-grid cols-3">
+          <div class="video-card">
+            <video src="assets/videos/async_wipe_vase_dp_original_60hz.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">DP original 60 Hz (async)</p><p class="video-caption">chunk-boundary gaps, stalls</p></div>
+          </div>
+          <div class="video-card">
+            <video src="assets/videos/async_wipe_vase_dp_latent.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">DP latent (async)</p><p class="video-caption">smoother but boundary jumps</p></div>
+          </div>
+          <div class="video-card ours">
+            <video src="assets/videos/async_wipe_vase_dp_latent_rtr.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">DP latent + RTR (async) <span class="badge">OURS</span></p><p class="video-caption">continuous, gap-free</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="video-group">
+        <h4>OFT — Original vs Latent vs Latent+RTR</h4>
+        <div class="video-grid cols-3">
+          <div class="video-card">
+            <video src="assets/videos/async_wipe_vase_oft_original.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">OFT original (async)</p><p class="video-caption">large chunk-boundary gaps</p></div>
+          </div>
+          <div class="video-card">
+            <video src="assets/videos/async_wipe_vase_oft_latent.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">OFT latent (async)</p><p class="video-caption">smoother but boundary jumps</p></div>
+          </div>
+          <div class="video-card ours">
+            <video src="assets/videos/async_wipe_vase_oft_latent_rtr.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">OFT latent + RTR (async) <span class="badge">OURS</span></p><p class="video-caption">continuous, gap-free</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="video-group">
+        <h4>PI0.5 — 4-way comparison (with RT-C baseline)</h4>
+        <p class="group-desc">RT-C is a real-time control baseline; even with RT-C, RTR still provides smoother transitions.</p>
+        <div class="video-grid cols-4">
+          <div class="video-card">
+            <video src="assets/videos/async_wipe_vase_pi05_original.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">PI0.5 original (async)</p><p class="video-caption">chunk-boundary gaps</p></div>
+          </div>
+          <div class="video-card">
+            <video src="assets/videos/async_wipe_vase_pi05_rtc.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">PI0.5 RT-C (async)</p><p class="video-caption">real-time control baseline</p></div>
+          </div>
+          <div class="video-card">
+            <video src="assets/videos/async_wipe_vase_pi05_latent.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">PI0.5 latent (async)</p><p class="video-caption">smoother but boundary jumps</p></div>
+          </div>
+          <div class="video-card ours">
+            <video src="assets/videos/async_wipe_vase_pi05_latent_rtr.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">PI0.5 latent + RTR (async) <span class="badge">OURS</span></p><p class="video-caption">continuous, gap-free</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================== Write Board (async) ============================== -->
+    <div class="task-section">
+      <h3>2.2 Write Board (asynchronous)</h3>
+
+      <div class="video-group">
+        <h4>DP — 5-way comprehensive comparison (frequency + RTR)</h4>
+        <p class="group-desc">The most comprehensive group: demonstrates both contributions of the paper jointly — the frequency problem and the RTR solution.</p>
+        <div class="video-grid cols-5">
+          <div class="video-card">
+            <video src="assets/videos/async_write_board_dp_15hz.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">DP 15 Hz (async)</p><p class="video-caption">low frequency, stop-and-go</p></div>
+          </div>
+          <div class="video-card">
+            <video src="assets/videos/async_write_board_dp_interpolated_60hz.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">DP interpolated 60 Hz (async)</p><p class="video-caption">upsampled, jittery</p></div>
+          </div>
+          <div class="video-card">
+            <video src="assets/videos/async_write_board_dp_original_60hz.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">DP original 60 Hz (async)</p><p class="video-caption">direct high-freq, jittery</p></div>
+          </div>
+          <div class="video-card">
+            <video src="assets/videos/async_write_board_dp_latent_60hz.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">DP latent 60 Hz (async)</p><p class="video-caption">latent space, smoother</p></div>
+          </div>
+          <div class="video-card ours">
+            <video src="assets/videos/async_write_board_dp_latent_rtr_60hz.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">DP latent + RTR 60 Hz (async) <span class="badge">OURS</span></p><p class="video-caption">latent + RTR, seamless</p></div>
+          </div>
+        </div>
+        <p class="group-takeaway">Takeaway: low-freq → interpolation → direct high-freq → latent → latent + RTR. The full evolution from stop-and-go to seamless real-time control.</p>
+      </div>
+
+      <div class="video-group">
+        <h4>OFT — Original vs Latent vs Latent+RTR</h4>
+        <div class="video-grid cols-3">
+          <div class="video-card">
+            <video src="assets/videos/async_write_board_oft_original.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">OFT original (async)</p><p class="video-caption">large gaps at chunk boundaries</p></div>
+          </div>
+          <div class="video-card">
+            <video src="assets/videos/async_write_board_oft_latent.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">OFT latent (async)</p><p class="video-caption">smoother but boundaries jump</p></div>
+          </div>
+          <div class="video-card ours">
+            <video src="assets/videos/async_write_board_oft_latent_rtr.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">OFT latent + RTR (async) <span class="badge">OURS</span></p><p class="video-caption">continuous, gap-free writing</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="video-group">
+        <h4>PI0.5 — 4-way comparison (with RTC baseline)</h4>
+        <div class="video-grid cols-4">
+          <div class="video-card">
+            <video src="assets/videos/async_write_board_pi05_original.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">PI0.5 original (async)</p><p class="video-caption">chunk-boundary gaps</p></div>
+          </div>
+          <div class="video-card">
+            <video src="assets/videos/async_write_board_pi05_rtc.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">PI0.5 RTC (async)</p><p class="video-caption">real-time control baseline</p></div>
+          </div>
+          <div class="video-card">
+            <video src="assets/videos/async_write_board_pi05_latent.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">PI0.5 latent (async)</p><p class="video-caption">smoother but boundary jumps</p></div>
+          </div>
+          <div class="video-card ours">
+            <video src="assets/videos/async_write_board_pi05_latent_rtr.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">PI0.5 latent + RTR (async) <span class="badge">OURS</span></p><p class="video-caption">continuous, gap-free</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================== Peel Cucumber (async) ============================== -->
+    <div class="task-section">
+      <h3>2.3 Peel Cucumber (asynchronous)</h3>
+
+      <div class="video-group">
+        <h4>DP — 4-way comparison</h4>
+        <div class="video-grid cols-4">
+          <div class="video-card">
+            <video src="assets/videos/async_peel_cucumber_dp_interpolated_60hz.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">DP interpolated 60 Hz (async)</p><p class="video-caption">upsampled, jittery</p></div>
+          </div>
+          <div class="video-card">
+            <video src="assets/videos/async_peel_cucumber_dp_original_60hz.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">DP original 60 Hz (async)</p><p class="video-caption">direct high-freq, jittery</p></div>
+          </div>
+          <div class="video-card">
+            <video src="assets/videos/async_peel_cucumber_dp_latent.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">DP latent (async)</p><p class="video-caption">smoother but boundary jumps</p></div>
+          </div>
+          <div class="video-card ours">
+            <video src="assets/videos/async_peel_cucumber_dp_latent_rtr.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">DP latent + RTR (async) <span class="badge">OURS</span></p><p class="video-caption">continuous, gap-free</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="video-group">
+        <h4>PI0.5 — 4-way comparison (with RTC baseline)</h4>
+        <div class="video-grid cols-4">
+          <div class="video-card">
+            <video src="assets/videos/async_peel_cucumber_pi05_original.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">PI0.5 original (async)</p><p class="video-caption">chunk-boundary gaps</p></div>
+          </div>
+          <div class="video-card">
+            <video src="assets/videos/async_peel_cucumber_pi05_rtc.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">PI0.5 RTC (async)</p><p class="video-caption">real-time control baseline</p></div>
+          </div>
+          <div class="video-card">
+            <video src="assets/videos/async_peel_cucumber_pi05_latent.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">PI0.5 latent (async)</p><p class="video-caption">smoother but boundary jumps</p></div>
+          </div>
+          <div class="video-card ours">
+            <video src="assets/videos/async_peel_cucumber_pi05_latent_rtr.mp4" controls muted playsinline preload="metadata"></video>
+            <div class="video-meta"><p class="video-title">PI0.5 latent + RTR (async) <span class="badge">OURS</span></p><p class="video-caption">continuous, gap-free</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <footer>
+    <p><strong>Learning High-Frequency Continuous Action Chunks in Latent Space</strong> · ICML 2026</p>
+    <p>Code: <a href="https://github.com/tars-robotics/RTR">github.com/tars-robotics/RTR</a></p>
+  </footer>
+
+</div>
+</body>
+</html>
