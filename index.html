@@ -46,6 +46,37 @@
     color: var(--text-dim);
     margin: 0 0 12px;
   }
+  header.hero .authors {
+    font-size: 17px;
+    color: var(--text);
+    margin: 0 0 8px;
+    font-weight: 500;
+  }
+  header.hero .authors sup {
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+  header.hero .affiliations {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin: 0 0 6px;
+    line-height: 1.8;
+  }
+  header.hero .affiliations sup {
+    font-size: 10px;
+  }
+  header.hero .corresponding {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin: 0 0 14px;
+  }
+  header.hero .corresponding a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  header.hero .corresponding a:hover {
+    text-decoration: underline;
+  }
   header.hero .venue {
     display: inline-block;
     background: var(--accent-soft);
@@ -296,7 +327,21 @@
 
   <header class="hero">
     <h1>Learning High-Frequency Continuous Action Chunks in Latent Space</h1>
-    <p class="subtitle">Kunyun Wang, Yuhang Zheng, Yupeng Zheng, Jieru Zhao, Wenchao Ding</p>
+    <p class="authors">
+      Kunyun Wang<sup>1,2</sup>&emsp;
+      Yuhang Zheng<sup>2,3</sup>&emsp;
+      Yupeng Zheng<sup>2,4</sup>&emsp;
+      Jieru Zhao<sup>1,+</sup>&emsp;
+      Wenchao Ding<sup>2,5,+</sup>
+    </p>
+    <p class="affiliations">
+      <sup>1</sup>School of Computer Science, Shanghai Jiao Tong University&emsp;
+      <sup>2</sup>TARS Robotics&emsp;
+      <sup>3</sup>National University of Singapore<br>
+      <sup>4</sup>Institute of Automation, Chinese Academy of Sciences&emsp;
+      <sup>5</sup>Fudan University
+    </p>
+    <p class="corresponding"><sup>+</sup>Corresponding authors: <a href="mailto:zhao-jieru@sjtu.edu.cn">zhao-jieru@sjtu.edu.cn</a>, <a href="mailto:dingwenchao@fudan.edu.cn">dingwenchao@fudan.edu.cn</a></p>
     <span class="venue">ICML 2026</span>
     <div class="links">
       <a href="https://github.com/tars-robotics/RTR" target="_blank" rel="noopener">
